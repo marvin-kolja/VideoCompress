@@ -210,6 +210,7 @@ public class SwiftVideoCompressPlugin: NSObject, FlutterPlugin {
         
         if frameRate != nil {
             let videoComposition = AVMutableVideoComposition(propertiesOf: sourceVideoAsset)
+            videoComposition.sourceTrackIDForFrameTiming = kCMPersistentTrackID_Invalid;
             videoComposition.frameDuration = CMTimeMake(value: 1, timescale: Int32(frameRate!))
             exporter.videoComposition = videoComposition
         }
