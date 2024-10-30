@@ -183,6 +183,10 @@ public class SwiftVideoCompressPlugin: NSObject, FlutterPlugin {
         let sourceVideoAsset = avController.getVideoAsset(sourceVideoUrl)
         let sourceVideoTrack = avController.getTrack(sourceVideoAsset)
         
+        guard let sourceVideoTrack = sourceVideoTrack else {
+            return result(FlutterError(code: channelName,message: "compressVideo error",details: "source video track is nil"))
+        }
+        
         let uuid = NSUUID()
         let compressionUrl =
         Utility.getPathUrl("\(Utility.basePath())/\(Utility.getFileName(path))\(uuid.uuidString).\(sourceVideoType)")
@@ -200,7 +204,7 @@ public class SwiftVideoCompressPlugin: NSObject, FlutterPlugin {
         
         let isIncludeAudio = includeAudio != nil ? includeAudio! : true
         
-        let session = getComposition(isIncludeAudio, timeRange, sourceVideoTrack!)
+        let session = getComposition(isIncludeAudio, timeRange, sourceVideoTrack)
         
         let exporter = AVAssetExportSession(asset: session, presetName: getExportPreset(quality))!
         
