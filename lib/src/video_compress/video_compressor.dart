@@ -127,7 +127,7 @@ extension Compress on IVideoCompress {
     int? startTime,
     int? duration,
     bool? includeAudio,
-    int frameRate = 30,
+    int? frameRate = 30,
   }) async {
     if (isCompressing) {
       throw StateError('''VideoCompress Error: 
