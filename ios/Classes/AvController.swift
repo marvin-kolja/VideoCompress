@@ -50,4 +50,8 @@ class AvController: NSObject {
         }
         return ""
     }
+    
+    public func getNominalFrameRate(_ track: AVAssetTrack)->Float {
+        return track.nominalFrameRate
+    }
 }

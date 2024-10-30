@@ -212,10 +212,10 @@ public class SwiftVideoCompressPlugin: NSObject, FlutterPlugin {
         exporter.outputFileType = AVFileType.mp4
         exporter.shouldOptimizeForNetworkUse = true
         
-        if frameRate != nil {
+        if let frameRate = frameRate, Float(frameRate) <= avController.getNominalFrameRate(sourceVideoTrack) {
             let videoComposition = AVMutableVideoComposition(propertiesOf: sourceVideoAsset)
             videoComposition.sourceTrackIDForFrameTiming = kCMPersistentTrackID_Invalid;
-            videoComposition.frameDuration = CMTimeMake(value: 1, timescale: Int32(frameRate!))
+            videoComposition.frameDuration = CMTimeMake(value: 1, timescale: Int32(frameRate))
             exporter.videoComposition = videoComposition
         }
         
