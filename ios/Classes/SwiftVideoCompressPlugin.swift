@@ -122,7 +122,7 @@ public class SwiftVideoCompressPlugin: NSObject, FlutterPlugin {
             "duration":duration,
             "filesize":filesize,
             "orientation":orientation
-            ] as [String : Any?]
+        ] as [String : Any?]
         return dictionary
     }
     
@@ -143,7 +143,7 @@ public class SwiftVideoCompressPlugin: NSObject, FlutterPlugin {
     private func getExportPreset(_ quality: NSNumber)->String {
         switch(quality) {
         case 1:
-            return AVAssetExportPresetLowQuality    
+            return AVAssetExportPresetLowQuality
         case 2:
             return AVAssetExportPresetMediumQuality
         case 3:
@@ -171,7 +171,7 @@ public class SwiftVideoCompressPlugin: NSObject, FlutterPlugin {
             return sourceVideoTrack.asset!
         }
         
-        return composition    
+        return composition
     }
     
     private func compressVideo(_ path: String,_ quality: NSNumber,_ deleteOrigin: Bool,_ startTime: Double?,
@@ -182,11 +182,11 @@ public class SwiftVideoCompressPlugin: NSObject, FlutterPlugin {
         
         let sourceVideoAsset = avController.getVideoAsset(sourceVideoUrl)
         let sourceVideoTrack = avController.getTrack(sourceVideoAsset)
-
+        
         let uuid = NSUUID()
         let compressionUrl =
         Utility.getPathUrl("\(Utility.basePath())/\(Utility.getFileName(path))\(uuid.uuidString).\(sourceVideoType)")
-
+        
         let timescale = sourceVideoAsset.duration.timescale
         let minStartTime = Double(startTime ?? 0)
         
