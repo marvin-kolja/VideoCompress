@@ -140,6 +140,20 @@ extension Compress on IVideoCompress {
       compressProgress\$ stream to know the compressing state.''');
     }
 
+    if (Platform.isIOS && frameRate != null) {
+      if (quality == VideoQuality.LowQuality && frameRate > 15) {
+        debugPrint('''VideoCompress Warning: 
+        Method: compressVideo
+        Frame rate too high.
+        VideoQuality.LowQuality will produce frame rates of 15 or less on iOS.''');
+      } else if (quality == VideoQuality.MediumQuality && frameRate > 30) {
+        debugPrint('''VideoCompress Warning: 
+        Method: compressVideo
+        Frame rate too high.
+        VideoQuality.MediumQuality will produce frame rates of 30 or less on iOS.''');
+      }
+    }
+
     // ignore: invalid_use_of_protected_member
     setProcessingStatus(true);
     final jsonStr = await _invoke<String>('compressVideo', {

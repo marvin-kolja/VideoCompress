@@ -1,6 +1,8 @@
 enum VideoQuality {
   DefaultQuality,
+  /// iOS - Max resulting frame rate is `15`
   LowQuality,
+  /// iOS - Max resulting frame rate is `30`
   MediumQuality,
   HighestQuality,
   Res640x480Quality,
