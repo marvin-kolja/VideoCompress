@@ -2,6 +2,7 @@ package com.example.video_compress
 
 import android.content.Context
 import android.graphics.Bitmap
+import android.media.MediaFormat
 import android.media.MediaMetadataRetriever
 import android.net.Uri
 import android.os.Build
@@ -31,11 +32,30 @@ class Utility(private val channelName: String) {
         return timeStamp.toLong()
     }
 
+    private fun getMinFrameRate(url: Uri): Int? {
+        val mediaExtractor = MediaExtractor()
+        mediaExtractor.setDataSource(uri.path)
+        val numTracks: Int = extractor.getTrackCount()
+
+        val frameRate = Int.MAX_VALUE
+
+        for (i in 0 until numTracks) {
+            val format: MediaFormat = extractor.getTrackFormat(i)
+            if (format.containsKey(MediaFormat.KEY_FRAME_RATE)) {
+                frameRate = Math.min(frameRate, format.getInteger(MediaFormat.KEY_FRAME_RATE));
+            }
+        }
+
+        return if ((frameRate == MAX_VALUE)) null else frameRate
+    }
+
     fun getMediaInfoJson(context: Context, path: String): JSONObject {
         val file = File(path)
         val retriever = MediaMetadataRetriever()
 
-        retriever.setDataSource(context, Uri.fromFile(file))
+        val uri = Uri.parse(path)
+
+        retriever.setDataSource(context, uri)
 
         val durationStr = retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION)
         val title = retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_TITLE) ?: ""
@@ -57,6 +77,7 @@ class Utility(private val channelName: String) {
             width = height
             height = tmp
         }
+        val frameRate = getMinFrameRate(uri)
 
         retriever.release()
 
@@ -71,6 +92,9 @@ class Utility(private val channelName: String) {
         json.put("filesize", filesize)
         if (ori != null) {
             json.put("orientation", ori)
+        }
+        if (frameRate != null) {
+            json.put("frameRate", frameRate)
         }
 
         return json

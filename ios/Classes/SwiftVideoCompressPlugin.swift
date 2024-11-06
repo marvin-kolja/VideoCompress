@@ -113,6 +113,8 @@ public class SwiftVideoCompressPlugin: NSObject, FlutterPlugin {
         let width = abs(size.width)
         let height = abs(size.height)
         
+        let frameRate = avController.getNominalFrameRate(track)
+        
         let dictionary = [
             "path":Utility.excludeFileProtocol(path),
             "title":title,
@@ -121,7 +123,8 @@ public class SwiftVideoCompressPlugin: NSObject, FlutterPlugin {
             "height":height,
             "duration":duration,
             "filesize":filesize,
-            "orientation":orientation
+            "orientation":orientation,
+            "frameRate":frameRate
         ] as [String : Any?]
         return dictionary
     }
