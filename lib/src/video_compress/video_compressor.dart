@@ -112,6 +112,11 @@ extension Compress on IVideoCompress {
   /// determine whether to delete his source file by [deleteOrigin]
   /// optional parameters [startTime] [duration] [includeAudio] [frameRate]
   ///
+  /// platform specific options [options]
+  /// See:
+  ///   [IOSOptions]
+  ///   [AndroidOptions]
+  ///
   /// ## example
   /// ```dart
   /// final info = await _flutterVideoCompress.compressVideo(
@@ -128,6 +133,7 @@ extension Compress on IVideoCompress {
     int? duration,
     bool? includeAudio,
     int? frameRate = 30,
+    List<PlatformOptions>? options,
   }) async {
     if (isCompressing) {
       throw StateError('''VideoCompress Error: 
@@ -156,7 +162,8 @@ extension Compress on IVideoCompress {
 
     // ignore: invalid_use_of_protected_member
     setProcessingStatus(true);
-    final jsonStr = await _invoke<String>('compressVideo', {
+
+    final arguments = <String, dynamic>{
       'path': path,
       'quality': quality.index,
       'deleteOrigin': deleteOrigin,
@@ -164,7 +171,15 @@ extension Compress on IVideoCompress {
       'duration': duration,
       'includeAudio': includeAudio,
       'frameRate': frameRate,
-    });
+    };
+
+    if (options != null) {
+      for (final option in options) {
+        arguments.addAll(option.toMap());
+      }
+    }
+
+    final jsonStr = await _invoke<String>('compressVideo', arguments);
 
     // ignore: invalid_use_of_protected_member
     setProcessingStatus(false);
@@ -193,5 +208,44 @@ extension Compress on IVideoCompress {
     return await _invoke<void>('setLogLevel', {
       'logLevel': logLevel,
     });
+  }
+}
+
+abstract class PlatformOptions {
+  Map<String, dynamic> toMap();
+}
+
+class IOSOptions extends PlatformOptions {
+  /// The file length that the output of the session must not exceed.
+  /// https://developer.apple.com/documentation/avfoundation/avassetexportsession/1622333-filelengthlimit
+  final int? fileLengthLimit;
+
+  IOSOptions({
+    this.fileLengthLimit,
+  });
+
+  @override
+  Map<String, dynamic> toMap() {
+    return {
+      'fileLengthLimit': fileLengthLimit,
+    };
+  }
+}
+
+class AndroidOptions extends PlatformOptions {
+  /// Desired bit rate (bits per second). Can optionally be
+  /// null, in which case the strategy will try to estimate the bitrate.
+  /// https://opensource.deepmedia.io/transcoder/track-strategies#other-options
+  final int? bitrate;
+
+  AndroidOptions({
+    this.bitrate,
+  });
+
+  @override
+  Map<String, dynamic> toMap() {
+    return {
+      'bitrate': bitrate,
+    };
   }
 }
