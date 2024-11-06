@@ -106,7 +106,7 @@ public class SwiftVideoCompressPlugin: NSObject, FlutterPlugin {
         let author = avController.getMetaDataByTag(metadataAsset,key: "author")
         
         let duration = asset.duration.seconds * 1000
-        let filesize = track.totalSampleDataLength
+        let filesize = Utility.getFileSize(path)
         
         let size = track.naturalSize.applying(track.preferredTransform)
         

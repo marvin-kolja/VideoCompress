@@ -53,4 +53,30 @@ class Utility: NSObject {
             try? fileManager.removeItem(at: url)
         }
     }
+    
+    static func getFileSize(_ path: String)->Int64? {
+        let url = getPathUrl(path)
+        
+        let filePath: String
+        
+        if #available(iOS 16.0, *) {
+            filePath = url.path()
+        } else {
+            filePath = url.path
+        }
+        
+        guard fileManager.fileExists(atPath: filePath) else {
+            return nil
+        }
+        
+        guard let attributes = try? fileManager.attributesOfItem(atPath: filePath) else {
+            return nil
+        }
+        
+        guard let fileSize = attributes[FileAttributeKey.size] as? Int64 else {
+            return nil
+        }
+        
+        return fileSize
+    }
 }
