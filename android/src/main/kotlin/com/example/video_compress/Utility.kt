@@ -4,6 +4,7 @@ import android.content.Context
 import android.graphics.Bitmap
 import android.media.MediaFormat
 import android.media.MediaMetadataRetriever
+import android.media.MediaExtractor
 import android.net.Uri
 import android.os.Build
 import io.flutter.plugin.common.MethodChannel
@@ -32,30 +33,28 @@ class Utility(private val channelName: String) {
         return timeStamp.toLong()
     }
 
-    private fun getMinFrameRate(url: Uri): Int? {
+    private fun getMinFrameRate(path: String): Int? {
         val mediaExtractor = MediaExtractor()
-        mediaExtractor.setDataSource(uri.path)
-        val numTracks: Int = extractor.getTrackCount()
+        mediaExtractor.setDataSource(path)
+        val numTracks: Int = mediaExtractor.getTrackCount()
 
-        val frameRate = Int.MAX_VALUE
+        var frameRate = Int.MAX_VALUE
 
         for (i in 0 until numTracks) {
-            val format: MediaFormat = extractor.getTrackFormat(i)
+            val format: MediaFormat = mediaExtractor.getTrackFormat(i)
             if (format.containsKey(MediaFormat.KEY_FRAME_RATE)) {
                 frameRate = Math.min(frameRate, format.getInteger(MediaFormat.KEY_FRAME_RATE));
             }
         }
 
-        return if ((frameRate == MAX_VALUE)) null else frameRate
+        return if ((frameRate == Int.MAX_VALUE)) null else frameRate
     }
 
     fun getMediaInfoJson(context: Context, path: String): JSONObject {
         val file = File(path)
         val retriever = MediaMetadataRetriever()
 
-        val uri = Uri.parse(path)
-
-        retriever.setDataSource(context, uri)
+        retriever.setDataSource(context, Uri.parse(path))
 
         val durationStr = retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION)
         val title = retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_TITLE) ?: ""
@@ -77,7 +76,7 @@ class Utility(private val channelName: String) {
             width = height
             height = tmp
         }
-        val frameRate = getMinFrameRate(uri)
+        val frameRate = getMinFrameRate(path)
 
         retriever.release()
 
